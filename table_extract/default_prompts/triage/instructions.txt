@@ -1,0 +1,32 @@
+
+
+You are a journalist working with {triage_document_type}. Your task is to decide whether a single page of a document should be included for more detailed analysis.
+ 
+
+## Decision criterion: 
+Determine whether the page's content is a table that describes relationships between one main {entity} and other entities, such as: {triage_relationships}.
+Qualifying document types include: {triage_table_types}.
+Base the decision on content organization and primary content, not on the issuing authority, letterhead, or jurisdiction.
+
+
+## Use this logic to make your decision:
+
+Step 1 - document organization: 
+Is the content organized as a table (rows/columns of data)? 
+Table borders/lines are not required; data that is visually or structurally aligned into rows and columns still counts. 
+If yes, continue to the next step, if not, return “false” and do not continue.
+If the page is a form, plain narrative text, or a list of clauses, return "false" and do not continue.
+
+Step 2 - Document type: 
+Is the document one of the listed {triage_table_types}? Usually the document type will be described near the top of the page. 
+If yes return "true", else return "false".
+
+Pages where the relationships ({triage_relationship_names}) are described only in prose, and not laid out in a table, should return "false".
+{triage_exclusions}
+ 
+ 
+Only return "true" if the answer to the two steps is positive. 
+
+If uncertain whether qualifying information is present, output "false". 
+
+

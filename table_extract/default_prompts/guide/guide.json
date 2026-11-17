@@ -1,0 +1,62 @@
+{
+  "document_type": "corporate ownership",
+  "table_types": "registers of members, registers of directors, share ledgers, share transfers, list of significant subsidiaries, or cap tables",
+  "entity": "company",
+  "relationships": [
+    {
+      "name": "Owner",
+      "description": "shareholders, members, ultimate beneficial owners and parent companies: anyone who owns or controls the main entity"
+    },
+    {
+      "name": "Director",
+      "description": "directors and board members of the main entity"
+    },
+    {
+      "name": "Secretary",
+      "description": "company secretaries of the main entity"
+    },
+    {
+      "name": "Subsidiary",
+      "description": "related or affiliated companies that the main entity owns or controls"
+    }
+  ],
+  "columns": [
+    "jurisdiction",
+    "relation_address",
+    "relation_country",
+    "relation_nationality",
+    "relation_type"
+  ],
+  "custom_columns": [],
+  "example_main_entity": "Acme Ltd",
+  "example_jurisdiction": null,
+  "example_rows": [
+    {
+      "relation_name": "Alice",
+      "relation_address": "c/o James Pitt, 12345 Sunset Blvd, Los Angeles, CA",
+      "relation_country": "USA",
+      "relation_nationality": null,
+      "relation_type": "Person",
+      "relationship": "Owner",
+      "NOTES": null
+    },
+    {
+      "relation_name": "Bob",
+      "relation_address": "8B Windsor Close, BELFAST, BT9 6FG",
+      "relation_country": "Northern Ireland",
+      "relation_nationality": null,
+      "relation_type": "Person",
+      "relationship": "Owner",
+      "NOTES": null
+    },
+    {
+      "relation_name": "Acme Holdings",
+      "relation_address": "PO Box 104, Dubai",
+      "relation_country": null,
+      "relation_nationality": null,
+      "relation_type": "Company",
+      "relationship": "Owner",
+      "NOTES": null
+    }
+  ]
+}

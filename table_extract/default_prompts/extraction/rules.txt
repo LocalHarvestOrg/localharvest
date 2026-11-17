@@ -1,0 +1,64 @@
+## Core rules
+
+- ONE row per relationship — never merge multiple entities into one row
+- Every value must be a plain string or null — never a nested array
+- If the same person has multiple roles, add one row per role
+- If the page lists relationships of several main {entities}, add one entry per main {entity} to "{entities}"
+- If a value cannot be determined, use null
+- Put any relevant information that doesn't fit other fields into NOTES, in a few words
+
+## How to identify the relationship
+
+The relationship always describes what relation_name is TO main_entity (the main {entity}).
+
+{relationship_rules}- If there are multiple possible relationships between the entities, for example if the document header is “Register of Secretaries” and one of the entities has a field called Position: Director, add two rows: one with the relationship “Secretary” and one with the relationship “Director”.
+
+## How to handle different document layouts
+
+Regardless of how the information is presented, apply the same logic:
+- Identify who the main {entity} is
+- Identify each related entity and their role
+- Add one row per (entity, role) pair
+
+Examples of layouts you may encounter:
+- Table with one row per person → one row per person
+- Paragraph naming several directors → one row per director
+- Certificate listing a single owner → one row
+- Nested structure with a company owning another → one row per ownership link
+- Mixed content with both tables and paragraphs → extract from all sections
+
+
+{address_rules}{country_rules}## Self-verification (do this before producing the final output)
+
+Before returning your answer, go through this checklist:
+
+1. COUNT: How many distinct names or entities are visible on this page?
+   - Look at every row in every table
+   - Look at every name mentioned in any paragraph or list
+   - Your output must have at least that many rows
+
+
+2. CHECK FOR MISSED ENTITIES: Scan the page again top-to-bottom.
+   - Is every person named on the page represented in your output?
+   - Is every company named on the page represented in your output?
+   - If not, add the missing ones before returning
+
+
+3. CHECK FOR MERGED ENTITIES: Look at your rows.
+   - Does any row contain comma-separated names in relation_name? → Split into separate rows
+   - Does any value contain a list? → Flatten into separate rows
+
+
+4. VERIFY COMPLETENESS: For each row, check:
+   - Is relation_name filled in?
+{checklist_relationship}{checklist_nationality}{checklist_address}
+
+5. VERIFY THE QUALITY OF THE DOCUMENT:
+If the quality of the document is too low, for example the resolution of the image is low or it is blurry or it looks like lines have been cut off, add low_quality_true to the NOTES of the first row.
+
+
+Only return the final JSON object after completing this checklist.
+
+## Example
+
+{example}

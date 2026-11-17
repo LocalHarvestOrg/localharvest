@@ -1,0 +1,117 @@
+# Builds LocalHarvest for Windows and Linux. PyInstaller cannot cross-compile,
+# so each is built on its own runner; macOS is built on a Mac by
+# packaging/release.sh, which creates the draft GitHub release.
+#
+# - When release.sh pushes a version tag (v0.3.0), this adds the Windows and
+#   Linux installers to the draft, from the same commit.
+# - Run by hand (Actions → Release → Run workflow), it only keeps the
+#   installers as workflow artifacts.
+name: Release
+
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+
+permissions:
+  contents: write # gh release upload
+
+defaults:
+  run:
+    shell: bash # Git Bash on Windows, so build_sidecar.sh runs everywhere
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            bundles: nsis
+          # The oldest Ubuntu GitHub offers: the app and the sidecar run on
+          # Linux versions with the glibc they were built with, or newer
+          - os: ubuntu-22.04
+            bundles: appimage,deb
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      # Windows runners check files out with CRLF line endings, which would
+      # change the prompts bundled in the sidecar (and their hash in run.json)
+      - run: git config --global core.autocrlf false
+
+      - uses: actions/checkout@v5
+
+      - name: Linux build packages
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential file libssl-dev libxdo-dev \
+            libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+
+      - uses: astral-sh/setup-uv@v7
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: app/src-tauri -> target
+
+      # The About panel lists the Rust crates from `cargo metadata --offline`
+      # (app/credits.ts), which fails until they are downloaded
+      - name: Download the Rust crates
+        run: cargo fetch --locked --manifest-path app/src-tauri/Cargo.toml
+
+      - name: Freeze the sidecar
+        run: packaging/build_sidecar.sh
+
+      - name: Build the app
+        working-directory: app
+        env:
+          # linuxdeploy is an AppImage itself, and runners have no FUSE
+          APPIMAGE_EXTRACT_AND_RUN: 1
+          # linuxdeploy looks up the libraries of every file in the AppImage,
+          # the sidecar's too, which links Pillow's own copies (libzstd-<hash>.so)
+          LD_LIBRARY_PATH: ${{ github.workspace }}/app/src-tauri/sidecar/_internal:${{ github.workspace }}/app/src-tauri/sidecar/_internal/pillow.libs
+        # --verbose, or a failing linuxdeploy does not say why
+        run: |
+          npm ci
+          npm run release -- --bundles ${{ matrix.bundles }} --verbose
+
+      # Stable names, so .../releases/latest/download/<name> always gives the newest build
+      - name: Collect the installers
+        run: |
+          bundle=app/src-tauri/target/release/bundle
+          mkdir -p dist
+          if [ "$RUNNER_OS" = Windows ]; then
+            cp "$bundle"/nsis/*-setup.exe dist/LocalHarvest-Windows-x64-setup.exe
+          else
+            cp "$bundle"/appimage/*.AppImage dist/LocalHarvest-Linux-x64.AppImage
+            cp "$bundle"/deb/*.deb dist/LocalHarvest-Linux-x64.deb
+          fi
+          ls -l dist
+
+      # linuxdeploy also rewrites those libraries: check the sidecar still starts
+      - name: Check the AppImage's sidecar
+        if: runner.os == 'Linux'
+        working-directory: ${{ runner.temp }}
+        run: |
+          "$GITHUB_WORKSPACE"/dist/LocalHarvest-Linux-x64.AppImage --appimage-extract > /dev/null
+          squashfs-root/usr/lib/LocalHarvest/sidecar/table-extract defaults > /dev/null
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: LocalHarvest-${{ runner.os }}
+          path: dist/
+          if-no-files-found: error
+
+      - name: Add them to the draft release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" dist/* --clobber

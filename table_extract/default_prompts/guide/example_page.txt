@@ -1,0 +1,4 @@
+A page mentions the company "Acme Ltd" and it says "Register of Shareholders" at the top. There are two columns [Name, Address] and three rows with data.
+In the first row under name it says Alice, and under address it says c/o James Pitt, 12345 Sunset Blvd, Los Angeles, CA, USA.
+The next row under name it says Bob, and under address it says 8B Windsor Close, BELFAST, BT9 6FG, Northern Ireland.
+In the last row it says Acme Holdings under name, and under address it says PO Box 104, Dubai.

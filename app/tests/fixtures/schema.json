@@ -1,0 +1,268 @@
+{
+    "$defs": {
+        "ExtractionConfig": {
+            "properties": {
+                "dpi": {
+                    "default": 200,
+                    "maximum": 600,
+                    "minimum": 36,
+                    "title": "Dpi",
+                    "type": "integer"
+                },
+                "max_tokens_schedule": {
+                    "items": {
+                        "type": "integer"
+                    },
+                    "title": "Max Tokens Schedule",
+                    "type": "array"
+                },
+                "tokens_per_entity_limit": {
+                    "default": 200,
+                    "minimum": 1,
+                    "title": "Tokens Per Entity Limit",
+                    "type": "integer"
+                },
+                "workers": {
+                    "default": 1,
+                    "minimum": 1,
+                    "title": "Workers",
+                    "type": "integer"
+                },
+                "server": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ServerConfig"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null
+                },
+                "prompt": {
+                    "$ref": "#/$defs/ExtractionPrompt"
+                }
+            },
+            "title": "ExtractionConfig",
+            "type": "object"
+        },
+        "ExtractionPrompt": {
+            "properties": {
+                "introduction": {
+                    "title": "Introduction",
+                    "type": "string"
+                },
+                "task": {
+                    "title": "Task",
+                    "type": "string"
+                },
+                "field_descriptions": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "title": "Field Descriptions",
+                    "type": "object"
+                },
+                "rules": {
+                    "title": "Rules",
+                    "type": "string"
+                },
+                "retry_reminders": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "Retry Reminders",
+                    "type": "array"
+                }
+            },
+            "title": "ExtractionPrompt",
+            "type": "object"
+        },
+        "Sampling": {
+            "description": "Sampling settings sent with every request. None leaves the server's default.",
+            "properties": {
+                "temperature": {
+                    "anyOf": [
+                        {
+                            "minimum": 0,
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Temperature"
+                },
+                "top_p": {
+                    "anyOf": [
+                        {
+                            "exclusiveMinimum": 0,
+                            "maximum": 1,
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Top P"
+                },
+                "top_k": {
+                    "anyOf": [
+                        {
+                            "minimum": 0,
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Top K"
+                },
+                "seed": {
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Seed"
+                }
+            },
+            "title": "Sampling",
+            "type": "object"
+        },
+        "ServerConfig": {
+            "description": "An OpenAI-compatible chat completions endpoint (llama-server or vLLM).",
+            "properties": {
+                "url": {
+                    "default": "http://localhost:8000/v1/chat/completions",
+                    "title": "Url",
+                    "type": "string"
+                },
+                "model": {
+                    "default": "qwen",
+                    "title": "Model",
+                    "type": "string"
+                },
+                "allow_remote": {
+                    "default": false,
+                    "title": "Allow Remote",
+                    "type": "boolean"
+                }
+            },
+            "title": "ServerConfig",
+            "type": "object"
+        },
+        "TriageConfig": {
+            "properties": {
+                "enabled": {
+                    "default": true,
+                    "title": "Enabled",
+                    "type": "boolean"
+                },
+                "dpi": {
+                    "default": 150,
+                    "maximum": 600,
+                    "minimum": 36,
+                    "title": "Dpi",
+                    "type": "integer"
+                },
+                "max_tokens": {
+                    "default": 100,
+                    "minimum": 1,
+                    "title": "Max Tokens",
+                    "type": "integer"
+                },
+                "workers": {
+                    "default": 1,
+                    "minimum": 1,
+                    "title": "Workers",
+                    "type": "integer"
+                },
+                "server": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ServerConfig"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null
+                },
+                "prompt": {
+                    "$ref": "#/$defs/TriagePrompt"
+                },
+                "pages": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "title": "Pages",
+                    "type": "object"
+                }
+            },
+            "title": "TriageConfig",
+            "type": "object"
+        },
+        "TriagePrompt": {
+            "properties": {
+                "instructions": {
+                    "title": "Instructions",
+                    "type": "string"
+                },
+                "examples": {
+                    "title": "Examples",
+                    "type": "string"
+                }
+            },
+            "title": "TriagePrompt",
+            "type": "object"
+        }
+    },
+    "description": "A whole run: triage and extraction over the input PDFs.",
+    "properties": {
+        "inputs": {
+            "items": {
+                "format": "path",
+                "type": "string"
+            },
+            "minItems": 1,
+            "title": "Inputs",
+            "type": "array"
+        },
+        "recursive": {
+            "default": false,
+            "title": "Recursive",
+            "type": "boolean"
+        },
+        "output_dir": {
+            "format": "path",
+            "title": "Output Dir",
+            "type": "string"
+        },
+        "server": {
+            "$ref": "#/$defs/ServerConfig"
+        },
+        "sampling": {
+            "$ref": "#/$defs/Sampling"
+        },
+        "triage": {
+            "$ref": "#/$defs/TriageConfig"
+        },
+        "extraction": {
+            "$ref": "#/$defs/ExtractionConfig"
+        }
+    },
+    "required": [
+        "inputs",
+        "output_dir"
+    ],
+    "title": "RunConfig",
+    "type": "object"
+}

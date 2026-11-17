@@ -1,0 +1,20 @@
+[project]
+name = "localharvest"
+version = "0.2.0"
+description = "Extract corporate ownership relationships from PDF documents with a local vision model."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "pandas>=2.3.1",
+    "pillow>=11.3.0",
+    "psutil>=5.9",
+    "pydantic>=2.7",
+    "pypdfium2>=4.30",
+    "requests>=2.32.4",
+    "uvicorn>=0.30",
+]
+
+[dependency-groups]
+# FastAPI's TestClient, for tests/test_server.py
+dev = ["httpx>=0.27"]

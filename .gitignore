@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv*
+
+models/
+
+model_output/
+
+pdfs/
+
+.DS_Store
+# Frozen sidecar, built by packaging/build_sidecar.sh
+app/src-tauri/sidecar/
+
+# oihho manual annotations: real documents, keep on the server only
+annotations/oihho-manual/
+
+# Claude Code local settings
+.claude/

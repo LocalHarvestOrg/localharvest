@@ -1,0 +1,2 @@
+Carefully read the ENTIRE page and extract ALL relationships between a main {entity} and any related entities.
+Related entities can appear in any format: tables, lists, paragraphs, headers, footnotes, or any other layout.

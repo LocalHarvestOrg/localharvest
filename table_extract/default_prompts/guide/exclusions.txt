@@ -1,0 +1,5 @@
+Other examples of documents that should return "false" include statutes/articles, meeting minutes, contracts, financial statements, or correspondence/emails.
+Tables whose rows carry financial figures rather than relationships should also return "false", even when they name people or companies:
+remuneration or compensation tables, share-saving, share award or incentive programme tables, and country-by-country or tax reports
+listing group entities with revenue, profit, tax or employee figures.
+Shareholder lists with numbers of shares or ownership percentages are relationship tables, not financial figures, so they still qualify.

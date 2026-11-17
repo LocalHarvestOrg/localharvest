@@ -1,0 +1,22 @@
+## Examples
+
+
+Positive example: 
+- {triage_example}
+
+
+This is what the output from this example should look like:
+{"triage_output":"true","notes":""}
+
+
+Negative example 1, not a table.
+- A page mentions the company "Acme Ltd" and it says "Agreement contract" at the top. There are a number of clauses.
+
+
+This is what the output from this example should look like:
+{"triage_output":"false","notes":""}
+
+
+
+{triage_exclusions}
+ 

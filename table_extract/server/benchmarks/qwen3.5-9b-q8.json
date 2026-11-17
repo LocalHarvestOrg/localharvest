@@ -1,0 +1,200 @@
+{
+  "model": "qwen3.5-9b-q8",
+  "benchmark": "oihho-manual",
+  "scored": "2026-10-27T07:12:52+00:00",
+  "hardware": {
+    "gpu": [
+      {
+        "name": "CUDA0",
+        "description": "NVIDIA A10G",
+        "backend": "CUDA",
+        "gpu": true,
+        "memory_total_bytes": 23686283264,
+        "memory_free_bytes": 12626952192
+      }
+    ],
+    "llama_cpp": "b1"
+  },
+  "server": {
+    "model_id": "unsloth/Qwen3.5-9B-GGUF:Q8_0",
+    "context": 20480,
+    "flags": [
+      "--reasoning",
+      "off"
+    ]
+  },
+  "triage-noprefilter": {
+    "status": "running",
+    "git_commit": "c86675b24191d989074ec53b710904d54bd9170b",
+    "sampling": {
+      "temperature": 0.0,
+      "top_p": null,
+      "top_k": null,
+      "seed": 42
+    },
+    "prompts": {
+      "triage_sha256": "a6cb599dd00bcbba",
+      "extraction_sha256": "e3aec97461b0efee"
+    },
+    "speed": {
+      "triage": {
+        "seconds": 33493.1,
+        "model_calls": 7732,
+        "seconds_per_page": 4.33,
+        "resumed": false
+      }
+    },
+    "documents": 30,
+    "pages": 7732,
+    "gold_positive_pages": 474,
+    "pages_found": {
+      "TP": 465,
+      "FP": 71,
+      "FN": 9,
+      "precision": 0.8675,
+      "recall": 0.981,
+      "f1": 0.9208
+    }
+  },
+  "triage": {
+    "status": "cancelled",
+    "git_commit": "875230e85b8c3981943b3fa97b3bcdc90abf5195",
+    "sampling": {
+      "temperature": 0.0,
+      "top_p": null,
+      "top_k": null,
+      "seed": 42
+    },
+    "prompts": {
+      "triage_sha256": "a6cb599dd00bcbba",
+      "extraction_sha256": "e3aec97461b0efee"
+    },
+    "speed": {
+      "triage": {
+        "seconds": 23361.3,
+        "model_calls": 7732,
+        "seconds_per_page": 3.02,
+        "resumed": false
+      }
+    },
+    "gpu": [
+      "NVIDIA A10G"
+    ],
+    "documents": 30,
+    "pages": 7732,
+    "gold_positive_pages": 474,
+    "pages_found": {
+      "TP": 465,
+      "FP": 73,
+      "FN": 9,
+      "precision": 0.8643,
+      "recall": 0.981,
+      "f1": 0.919
+    }
+  },
+  "extraction": {
+    "status": "done",
+    "git_commit": "c86675b24191d989074ec53b710904d54bd9170b",
+    "sampling": {
+      "temperature": 0.0,
+      "top_p": null,
+      "top_k": null,
+      "seed": 42
+    },
+    "prompts": {
+      "triage_sha256": "a6cb599dd00bcbba",
+      "extraction_sha256": "e3aec97461b0efee"
+    },
+    "speed": {
+      "extraction": {
+        "seconds": 4652.0,
+        "model_calls": 335,
+        "seconds_per_page": 13.89,
+        "resumed": false
+      }
+    },
+    "gpu": [
+      "NVIDIA A10G"
+    ],
+    "documents": 73,
+    "pages": 330,
+    "gold_relationships": 538,
+    "predicted_relationships": 508,
+    "predictions_on_unannotated_pages": 20,
+    "parse_errors": 0,
+    "relationships_found": {
+      "TP": 482,
+      "FP": 26,
+      "FN": 56,
+      "precision": 0.9488,
+      "recall": 0.8959,
+      "f1": 0.9216
+    },
+    "all_fields_correct": {
+      "TP": 447,
+      "FP": 61,
+      "FN": 56,
+      "precision": 0.8799,
+      "recall": 0.8887,
+      "f1": 0.8843
+    },
+    "fields": {
+      "company_name": {
+        "TP": 467,
+        "FP": 41,
+        "FN": 56,
+        "precision": 0.9193,
+        "recall": 0.8929,
+        "f1": 0.9059
+      },
+      "relation_name": {
+        "TP": 482,
+        "FP": 26,
+        "FN": 56,
+        "precision": 0.9488,
+        "recall": 0.8959,
+        "f1": 0.9216
+      },
+      "relation_address": {
+        "TP": 476,
+        "FP": 32,
+        "FN": 56,
+        "precision": 0.937,
+        "recall": 0.8947,
+        "f1": 0.9154
+      },
+      "relation_country": {
+        "TP": 467,
+        "FP": 41,
+        "FN": 56,
+        "precision": 0.9193,
+        "recall": 0.8929,
+        "f1": 0.9059
+      },
+      "relation_nationality": {
+        "TP": 480,
+        "FP": 28,
+        "FN": 56,
+        "precision": 0.9449,
+        "recall": 0.8955,
+        "f1": 0.9195
+      },
+      "relation_type": {
+        "TP": 481,
+        "FP": 27,
+        "FN": 56,
+        "precision": 0.9469,
+        "recall": 0.8957,
+        "f1": 0.9206
+      },
+      "relationship": {
+        "TP": 478,
+        "FP": 30,
+        "FN": 56,
+        "precision": 0.9409,
+        "recall": 0.8951,
+        "f1": 0.9175
+      }
+    }
+  }
+}

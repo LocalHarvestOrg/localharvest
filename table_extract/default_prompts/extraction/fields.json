@@ -1,0 +1,11 @@
+{
+  "main_entity": "Name of the {entity} stated in the document",
+  "jurisdiction": "Where the {entity} is officially registered, if present. It can be a country, state or territory, like Delaware or British Columbia.",
+  "relation_name": "Name of the person or company related to the main {entity}",
+  "relation_address": "Address of the person or company related to the main {entity}, if present. This field should include the literal address captured in the document, including c/o field if present.",
+  "relation_country": "Country of the address of the person or company related to the main {entity}, if present",
+  "relation_nationality": "Nationality of the person related to the main {entity}, if present",
+  "relation_type": "Type of related entity. Must be one of these two: ['Person', 'Company']. Cannot be null. If it's not clear, use your best judgement based on the name and context.",
+  "relationship": "Relationship of the related entity to the main {entity}, i.e. what relation_name is to main_entity. {relationship_choice}",
+  "NOTES": "Any other relevant information not captured in the fields above"
+}

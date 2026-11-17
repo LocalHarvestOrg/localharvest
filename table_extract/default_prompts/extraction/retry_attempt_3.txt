@@ -1,0 +1,11 @@
+
+
+        CRITICAL: You have now failed twice to extract all entities from this page.
+        Do the following step by step BEFORE writing the JSON:
+
+        Step 1 - List every name you can see on the page, one per line.
+        Step 2 - For each name, note their role/relationship.
+        Step 3 - Only then write the JSON object, with one row per name from Step 1.
+
+        Every name from Step 1 MUST appear as a separate row in the final JSON.
+    
