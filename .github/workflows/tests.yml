@@ -57,6 +57,11 @@ jobs:
       - name: Install the dependencies
         run: npm ci
 
+      # tests/credits.spec.ts lists the Rust crates with `cargo metadata
+      # --offline` (app/credits.ts), which fails until they are downloaded
+      - name: Download the Rust crates
+        run: cargo fetch --locked --manifest-path src-tauri/Cargo.toml
+
       - name: Run the tests
         run: npm test
 
