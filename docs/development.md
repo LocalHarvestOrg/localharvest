@@ -54,6 +54,8 @@ cd app && npm test && npm run typecheck                  # Vitest and vue-tsc
 
 The Python tests use fake model, Hugging Face, GitHub and llama-server processes on `127.0.0.1`.
 
+Every pull request into `main` runs both on GitHub Actions ([tests.yml](../.github/workflows/tests.yml)), as the `python-tests` and `app-tests` checks.
+
 An end-to-end check drives the whole app in a Tauri window (debug builds only), with the fake model server running. It starts a run, cancels, resumes and replaces it, opens the results folder, quits and prints `SMOKE TEST PASSED` or `FAILED`. Use a short PDF and a new `output_dir` each time:
 
 ```bash

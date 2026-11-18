@@ -1,0 +1,64 @@
+# Runs the Python tests and the app's tests and type checks on every pull
+# request into main.
+#
+# This runs code from the pull request, so it must stay on `pull_request`, which
+# gives forks no secrets and a read-only token. Never use `pull_request_target`.
+#
+# The job names are the status checks GitHub reports: renaming one breaks any
+# ruleset that requires it. For the same reason, do not add path filters: a
+# required check that never starts blocks the pull request.
+name: Tests
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements_extract.txt
+
+      - name: Install the dependencies
+        run: pip install -r requirements_extract.txt
+
+      - name: Run the tests
+        run: python -m unittest discover tests
+
+  app-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install the dependencies
+        run: npm ci
+
+      - name: Run the tests
+        run: npm test
+
+      - name: Check the types
+        run: npm run typecheck
