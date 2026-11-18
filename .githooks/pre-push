@@ -1,0 +1,11 @@
+#!/bin/sh
+# The last check before anything becomes public, branches included.
+# Git passes one "<local ref> <local sha> <remote ref> <remote sha>" line per ref.
+checker="$(git rev-parse --show-toplevel)/.github/scripts/check_sensitive.py"
+status=0
+while read -r _ local_sha _ _; do
+  case "$local_sha" in
+    *[!0]*) python3 "$checker" --unpushed "$local_sha" < /dev/null || status=1 ;;
+  esac
+done
+exit "$status"

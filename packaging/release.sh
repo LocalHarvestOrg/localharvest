@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 # Release a version of LocalHarvest from main: packaging/release.sh 0.3.0
 #
-# Runs the tests, sets the version everywhere and commits it, builds the .dmg on
-# this Mac, pushes the commit to main and creates a draft GitHub release, tagged
-# v0.3.0. Pushing the tag starts the GitHub Actions workflow
-# (.github/workflows/release.yml), which adds the Windows and Linux installers
-# to the draft. Publishing the draft, once they are there and tested, is left to
-# you: the script prints the command. Nobody sees the release before that.
+# main only changes through pull requests, so a release takes two runs:
+#
+# 1. While main has another version, it sets the version everywhere on a
+#    release/0.3.0 branch and opens a pull request.
+# 2. Once that is merged and pulled, it runs the tests, builds the .dmg on this
+#    Mac and creates a draft GitHub release, tagged v0.3.0. Pushing the tag starts
+#    the GitHub Actions workflow (.github/workflows/release.yml), which adds the
+#    Windows and Linux installers to the draft. Publishing the draft, once they
+#    are there and tested, is left to you: the script prints the command. Nobody
+#    sees the release before that.
 #
 # Needs uv, Node.js, Rust, .venv_extract and the GitHub CLI, logged in
-# (gh auth login). If a build fails, fix it on main and run the script again
-# with the same version.
+# (gh auth login). If a build fails, merge the fix into main, pull and run the
+# script again with the same version.
 set -euo pipefail
 
 # Stable name, so .../releases/latest/download/<name> always gives the newest release
@@ -43,10 +47,8 @@ if [ -n "$(git rev-list HEAD..origin/main)" ]; then
   echo "main is behind GitHub: pull first." >&2
   exit 1
 fi
-# The only commit allowed to be unpushed is this release's, left by a failed build
-AHEAD="$(git log --format=%s origin/main..HEAD)"
-if [ -n "$AHEAD" ] && [ "$AHEAD" != "Release $VERSION" ]; then
-  echo "main has commits that are not on GitHub: push them first." >&2
+if [ -n "$(git rev-list origin/main..HEAD)" ]; then
+  echo "main has commits that are not on GitHub: move them to a pull request first." >&2
   exit 1
 fi
 if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null; then
@@ -63,21 +65,40 @@ if [ "$(printf '%s\n%s\n' "$CURRENT" "$VERSION" | sort -V | tail -n 1)" != "$VER
   exit 1
 fi
 
+# The version is merged before the build: the app records the commit in every run
+if [ "$CURRENT" != "$VERSION" ]; then
+  BRANCH="release/$VERSION"
+  if git ls-remote --exit-code --heads origin "refs/heads/$BRANCH" > /dev/null; then
+    echo "$BRANCH is already on GitHub: merge its pull request, pull main and run this again." >&2
+    exit 1
+  fi
+  git switch --quiet --force-create "$BRANCH"
+  sed -i '' -E "s/^( *\"version\": )\".*\",$/\1\"$VERSION\",/" app/src-tauri/tauri.conf.json
+  sed -i '' -E "1,5s/^version = \".*\"/version = \"$VERSION\"/" app/src-tauri/Cargo.toml pyproject.toml
+  sed -i '' -E "s/^__version__ = \".*\"/__version__ = \"$VERSION\"/" table_extract/__init__.py
+  (cd app && npm version "$VERSION" --no-git-tag-version --allow-same-version > /dev/null)
+  cargo update --workspace --offline --quiet --manifest-path app/src-tauri/Cargo.toml
+  uv lock --quiet
+  git add app/src-tauri/tauri.conf.json app/src-tauri/Cargo.toml app/src-tauri/Cargo.lock \
+    app/package.json app/package-lock.json pyproject.toml uv.lock table_extract/__init__.py
+  git commit --quiet -m "Release $VERSION"
+  git push --quiet --set-upstream origin "$BRANCH"
+  gh pr create --base main --head "$BRANCH" --title "Release $VERSION" --body "Sets the version to $VERSION."
+  git switch --quiet main
+  cat <<EOF
+
+Merge the pull request, then build the release:
+
+  gh pr merge $BRANCH --squash --admin --delete-branch
+  git pull --ff-only
+  packaging/release.sh $VERSION
+EOF
+  exit 0
+fi
+
 .venv_extract/bin/python -m unittest discover tests
 (cd app && npm ci && npm test && npm run typecheck)
 
-# The commit comes before the build: the app records it in every run
-sed -i '' -E "s/^( *\"version\": )\".*\",$/\1\"$VERSION\",/" app/src-tauri/tauri.conf.json
-sed -i '' -E "1,5s/^version = \".*\"/version = \"$VERSION\"/" app/src-tauri/Cargo.toml pyproject.toml
-sed -i '' -E "s/^__version__ = \".*\"/__version__ = \"$VERSION\"/" table_extract/__init__.py
-(cd app && npm version "$VERSION" --no-git-tag-version --allow-same-version > /dev/null)
-cargo update --workspace --offline --quiet --manifest-path app/src-tauri/Cargo.toml
-uv lock --quiet
-git add app/src-tauri/tauri.conf.json app/src-tauri/Cargo.toml app/src-tauri/Cargo.lock \
-  app/package.json app/package-lock.json pyproject.toml uv.lock table_extract/__init__.py
-if ! git diff --cached --quiet; then
-  git commit --quiet -m "Release $VERSION"
-fi
 COMMIT="$(git rev-parse HEAD)"
 
 packaging/build_sidecar.sh
@@ -111,8 +132,6 @@ The app is not signed yet, so each system warns about it once.
 
 **Linux.** Either install the .deb (\`sudo apt install ./LocalHarvest-Linux-x64.deb\`), or make the AppImage executable (\`chmod +x LocalHarvest-Linux-x64.AppImage\`) and run it.
 EOF
-
-git push --quiet origin HEAD:refs/heads/main
 
 # The draft comes before the tag, so the workflow always finds it to upload to.
 # A draft does not create its tag on GitHub, so this leaves nothing behind if it fails.

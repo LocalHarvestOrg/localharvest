@@ -1,0 +1,10 @@
+# Exceptions to .github/scripts/check_sensitive.py: <rule> <path glob>  # why
+# CI reads this file from main, so a pull request cannot approve its own exception.
+
+file-type app/src-tauri/icons/*.png  # the app's icons
+private-address tests/test_table_extract.py  # example of a refused remote server
+
+# Default paths already published in these analysis scripts
+personal-path utils/calculate_performance.py
+personal-path utils/calculate_performance_triage.py
+personal-path utils/develop_perf.ipynb
