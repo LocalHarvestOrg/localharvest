@@ -10,7 +10,15 @@ From `main`, up to date with GitHub, nothing uncommitted, GitHub CLI logged in (
 packaging/release.sh 0.3.0
 ```
 
-It runs the tests, sets the version everywhere and commits it, builds the macOS `.dmg`, pushes to `main` and creates a draft release tagged `v0.3.0`. The tag starts the Release workflow, which adds the Windows and Linux installers to the draft about half an hour later. If a build fails, fix it on `main` and run the script again with the same version.
+`main` only changes through pull requests, so this takes two runs. The first sets the version everywhere on a `release/0.3.0` branch, opens a pull request and prints the commands to merge it and continue. Run the same command again once it is merged and pulled:
+
+```bash
+gh pr merge release/0.3.0 --squash --admin --delete-branch
+git pull --ff-only
+packaging/release.sh 0.3.0
+```
+
+The second run does the tests, builds the macOS `.dmg` and creates a draft release tagged `v0.3.0`. The tag starts the Release workflow, which adds the Windows and Linux installers to the draft about half an hour later. If a build fails, merge the fix into `main`, pull and run the script again with the same version.
 
 Test the installers, write the release notes on GitHub, then publish:
 

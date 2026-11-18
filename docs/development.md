@@ -15,6 +15,18 @@ Two parts:
 cd app && npm install
 ```
 
+Turn on the checks that stop secrets and real documents before they are committed or pushed, once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+## Contributing
+
+`main` is protected: every change is a pull request, squash-merged after the owner's review and the `sensitive-data` check. This repository is public, and anything pushed, even to a branch, can be seen and copied at once, so never commit real documents, annotations, model output or credentials.
+
+The check refuses secrets, documents, datasets, archives, scans, notebook outputs, personal paths and email addresses. Run it by hand with `python3 .github/scripts/check_sensitive.py --all`. A false positive goes in `.github/sensitive-allowlist`, in its own pull request, because CI reads that file from `main`.
+
 ## Running the app
 
 **Browser mode**, the quickest for working on screens. Start the sidecar with a fixed token, then Vite:
